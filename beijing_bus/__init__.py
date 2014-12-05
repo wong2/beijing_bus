@@ -17,4 +17,4 @@ class BeijingBus(object):
 
     @classmethod
     def search_lines(cls, keyword):
-        return list(BusLine.search(keyword))
+        return list(BusLine.search(str(keyword)))
