@@ -8,16 +8,16 @@
 from dogpile.cache import make_region
 
 
-cache_config_null = {
-    'backend': 'dogpile.cache.null'
-}
-
-cache_config_file = {
+cache_config = {
     'backend': 'dogpile.cache.dbm',
     'arguments': {
         'filename': 'offline_data/bus_offline_data.dbm'
     }
 }
 
+try:
+    from .local_cache_config import cache_config
+except:
+    pass
 
-cache = make_region().configure(**cache_config_file)
+cache = make_region().configure(**cache_config)
