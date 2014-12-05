@@ -32,7 +32,7 @@ class BusLine(object):
             'id': int(busline['lineid']),
             'name': d(busline['linename']),
             'short_name': d(busline['shotname']),
-            'distince': float(busline['distince']),
+            'distance': float(busline['distince']),
             'ticket_type': busline['ticket'],
             'price': float(busline['totalPrice']),
             'running_time': busline['time'],
