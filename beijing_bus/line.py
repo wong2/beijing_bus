@@ -78,8 +78,10 @@ class BusLine(object):
             station_num = station_num.get_num_in_a_line(self)
 
         resp_doc = api.get_realtime_data(self.id, station_num)
-        bus_datas = resp_doc['root']['data']['bus']
-        return [self._format_realtime_data(data) for data in bus_datas]
+        root = resp_doc['root']
+        if not root.get('data'):
+            return []
+        return [self._format_realtime_data(data) for data in root['data']['bus']]
 
     def _format_realtime_data(self, data):
 
