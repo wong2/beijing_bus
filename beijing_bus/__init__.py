@@ -31,6 +31,9 @@ class BeijingBus(object):
             'to_station': <Station 将台路口西>
         }
         """
+        if isinstance(sentence, unicode):
+            sentence = sentence.encode('utf-8')
+
         possible_lines = cls.extract_lines(sentence)
         if not possible_lines:
             return None

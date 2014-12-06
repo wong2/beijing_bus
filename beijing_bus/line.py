@@ -1,6 +1,7 @@
 #-*-coding:utf-8-*-
 
 from datetime import datetime
+from pytz import timezone
 
 from . import api
 from .cache import cache
@@ -84,7 +85,7 @@ class BusLine(object):
 
         def t(ts):
             if float(ts) > -1:
-                return datetime.fromtimestamp(float(ts))
+                return datetime.fromtimestamp(float(ts), tz=timezone('Asia/Shanghai'))
 
         key = 'aibang%s' % data['gt']
         d = Cipher(key).decrypt

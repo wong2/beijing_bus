@@ -11,7 +11,7 @@ app.config.from_object('config')
 
 weixin = Weixin(app)
 
-app.add_url_rule('/', view_func=weixin.view_func)
+app.add_url_rule('/weixin', view_func=weixin.view_func)
 
 
 @weixin.register('*')
@@ -47,10 +47,10 @@ def get_realtime_message(line, from_station, to_station):
     reply = '查询: %s  %s -> %s\n\n' % (line.short_name, from_station.name, to_station.name)
     for i, data in enumerate(realtime_data):
         reply += '车辆%s：' % (i+1)
-        reply += '距离%s还有 %s米，' % (from_station.name, data['station_distance'])
+        reply += '距离%s还有 %s米，' % (from_station.name, int(data['station_distance']))
         reply += '预计%s到达\n\n' % data['station_arriving_time'].strftime('%H:%M')
-    return reply
+    return reply.strip()
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=8484)
