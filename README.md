@@ -13,7 +13,7 @@
 
 项目自带了一个终端中的查询工具作为例子，运行： `python manage.py query`
 
-### Example
+### Examples
 
     >>> from beijing_bus import BeijingBus
     >>> lines = BeijingBus.get_all_lines()
@@ -51,5 +51,4 @@
 
 - [x] 实现 beijing_bus 模块，提供需要的Python接口
 - [x] 终端中的查询工具
-- [ ] webapp
 - [ ] 微信公众号
