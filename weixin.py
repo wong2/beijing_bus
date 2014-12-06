@@ -21,10 +21,10 @@ def query(**kwargs):
     message_type = kwargs.get('type')
 
     if message_type == 'event' and kwargs.get('event') == 'subscribe':
-        reply = '''
-            欢迎关注北京实时公交，你可以通过向我发送消息查询公交实时到站时间。\n
-            示例：847从西坝河去将台路口西
-        '''
+        reply = '''欢迎关注北京实时公交!
+        你可以通过向我发送消息查询公交实时到站时间。\n
+        示例：847从西坝河去将台路口西'''
+
         return weixin.reply(
             username, sender=sender, content=reply
         )
