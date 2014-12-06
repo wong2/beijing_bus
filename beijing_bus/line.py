@@ -73,25 +73,27 @@ class BusLine(object):
                 yield line
 
     def get_realtime_data(self, station_num):
+        resp_doc = api.get_realtime_data(self.id, station_num)
+        bus_datas = resp_doc['root']['data']['bus']
+        return [self._format_realtime_data(data) for data in bus_datas]
+
+    def _format_realtime_data(self, data):
 
         def t(ts):
             if float(ts) > -1:
                 return datetime.fromtimestamp(float(ts))
 
-        data = []
-        resp_doc = api.get_realtime_data(self.id, station_num)
-        for bus_data in resp_doc['root']['data']['bus']:
-            key = 'aibang%s' % bus_data['gt']
-            d = Cipher(key).decrypt
-            data.append({
-                'id': int(bus_data['id']),
-                'lat': float(d(bus_data['x'])),
-                'lon': float(d(bus_data['y'])),
-                'next_station_name': d(bus_data['ns']),
-                'next_station_num': int(d(bus_data['nsn'])),
-                'next_station_distance': float(bus_data['nsd']),
-                'next_station_arriving_time': t(bus_data['nst']),
-                'station_distance': float(d(bus_data['sd'])),
-                'station_arriving_time': t(d(bus_data['st'])),
-            })
-        return data
+        key = 'aibang%s' % data['gt']
+        d = Cipher(key).decrypt
+
+        return {
+            'id': int(data['id']),
+            'lat': float(d(data['x'])),
+            'lon': float(d(data['y'])),
+            'next_station_name': d(data['ns']),
+            'next_station_num': int(d(data['nsn'])),
+            'next_station_distance': float(data['nsd']),
+            'next_station_arriving_time': t(data['nst']),
+            'station_distance': float(d(data['sd'])),
+            'station_arriving_time': t(d(data['st'])),
+        }
