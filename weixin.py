@@ -22,9 +22,7 @@ def query(**kwargs):
     if content:
         data = BeijingBus.extract_line_and_stations(content)
         if data:
-            reply = get_realtime_message(data['line'], 
-                                         data['from_station'],
-                                         data['to_station'])
+            reply = get_realtime_message(data['line'], data['from_station'])
             if not reply:
                 reply = '目前还没有车要来呢'
         else:
@@ -37,17 +35,17 @@ def query(**kwargs):
     )
 
 
-def get_realtime_message(line, from_station, to_station):
-    realtime_data = line.get_realtime_data(from_station)
+def get_realtime_message(line, station):
+    realtime_data = line.get_realtime_data(station)
     realtime_data = filter(lambda d: d['station_arriving_time'], realtime_data)
     realtime_data.sort(key=lambda d: d['station_arriving_time'])
     if not realtime_data:
         return ''
 
-    reply = '查询: %s  %s -> %s\n\n' % (line.short_name, from_station.name, to_station.name)
+    reply = '查询: %s  %s \n----------\n' % (line.short_name, station.name)
     for i, data in enumerate(realtime_data):
         reply += '车辆%s：' % (i+1)
-        reply += '距离%s还有 %s米，' % (from_station.name, int(data['station_distance']))
+        reply += '距离%s还有 %s米，' % (station.name, int(data['station_distance']))
         reply += '预计%s到达\n\n' % data['station_arriving_time'].strftime('%H:%M')
     return reply.strip()
 
