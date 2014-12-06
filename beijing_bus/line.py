@@ -73,6 +73,9 @@ class BusLine(object):
                 yield line
 
     def get_realtime_data(self, station_num):
+        if isinstance(station_num, BusStation):
+            station_num = station_num.get_num_in_a_line(self)
+
         resp_doc = api.get_realtime_data(self.id, station_num)
         bus_datas = resp_doc['root']['data']['bus']
         return [self._format_realtime_data(data) for data in bus_datas]
