@@ -18,6 +18,17 @@ app.add_url_rule('/weixin', view_func=weixin.view_func)
 def query(**kwargs):
     username = kwargs.get('sender')
     sender = kwargs.get('receiver')
+    message_type = kwargs.get('type')
+
+    if message_type == 'event' and kwargs.get('event') == 'subscribe':
+        reply = '''
+            欢迎关注北京实时公交，你可以通过向我发送消息查询公交实时到站时间。\n
+            示例：847从西坝河去将台路口西
+        '''
+        return weixin.reply(
+            username, sender=sender, content=reply
+        )
+
     content = kwargs.get('content')
     if content:
         data = BeijingBus.extract_line_and_stations(content)
