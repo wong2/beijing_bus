@@ -14,47 +14,78 @@ weixin = Weixin(app)
 app.add_url_rule('/weixin', view_func=weixin.view_func)
 
 
+QUERY_EXAMPLE = '查询示例： 从西坝河到将台路口西'
+
 @weixin.register('*')
 def query(**kwargs):
     username = kwargs.get('sender')
     sender = kwargs.get('receiver')
     message_type = kwargs.get('type')
 
-    if message_type == 'event' and kwargs.get('event') == 'subscribe':
-        reply = ('欢迎关注北京实时公交!\n'
-                 '你可以通过向我发送消息查询公交实时到站时间。\n\n'
-                 '示例：847从西坝河去将台路口西')
+    def r(content):
         return weixin.reply(
-            username, sender=sender, content=reply
+            username, sender=sender, content=content
         )
 
+    if message_type == 'event' and kwargs.get('event') == 'subscribe':
+        reply = ('欢迎关注北京实时公交!\n'
+                 '你可以通过向我发送消息查询公交实时到站时间。\n\n%s'
+                ) % QUERY_EXAMPLE
+        return r(reply)
+
     content = kwargs.get('content')
-    if content:
-        data = BeijingBus.extract_line_and_stations(content)
-        if data:
-            reply = get_realtime_message(data['line'], data['from_station'])
-            if not reply:
-                reply = '目前还没有车要来呢'
-        else:
-            reply = '没有结果，可能还不支持这条线路呢~ \n查询示例： 847从西坝河到将台路口西'
-    else:
-        reply = '我好笨笨哦，还不懂你在说什么。\n查询示例： 847从西坝河到将台路口西'
-        
-    return weixin.reply(
-        username, sender=sender, content=reply
-    )
+    if not content:
+        reply = '我好笨笨哦，还不懂你在说什么。\n%s' % QUERY_EXAMPLE
+        return r(reply)
+
+    stations = BeijingBus.extract_stations(content)
+    lines = BeijingBus.extract_lines(content)
+    if len(stations) < 2:
+        reply = '没有结果，可能还不支持这条线路呢~ \n%s' % QUERY_EXAMPLE
+        return r(reply)
+
+    from_station, to_station = stations[:2]
+    lines = match_stations_with_lines(from_station, to_station, lines)
+    if not lines:
+        reply = '没有结果，可能还不支持这条线路呢~ \n%s' % QUERY_EXAMPLE
+        return r(reply)
+
+    reply = get_realtime_message(lines, from_station)
+    return r(reply)
 
 
-def get_realtime_message(line, station):
-    realtime_data = line.get_realtime_data(station)
-    realtime_data = filter(lambda d: d['station_arriving_time'], realtime_data)
-    realtime_data.sort(key=lambda d: d['station_arriving_time'])
-    if not realtime_data:
-        return ''
+def match_stations_with_lines(from_station, to_station, lines=None):
 
-    reply = '查询: %s  %s \n----------\n' % (line.short_name, station.name)
-    for i, data in enumerate(realtime_data):
-        reply += '车辆%s：' % (i+1)
+    def match(a, b, L):
+        '''检查L中包含a和b且a比b靠前'''
+        try:
+            return L.index(a) < L.index(b)
+        except ValueError:
+            return False
+
+    if not lines:
+        lines = BeijingBus.get_all_lines()
+
+    return [
+        line for line in lines 
+             if match(from_station, to_station, line.stations)
+    ]
+
+
+def get_realtime_message(lines, station):
+    realtime_datas = []
+    for line in lines:
+        for data in line.get_realtime_data(station):
+            if data.get('station_arriving_time'):
+                realtime_datas.append((line, data))
+    realtime_datas.sort(key=lambda d: d[1]['station_arriving_time'])
+
+    if not realtime_datas:
+        return '目前还没有车要来呢'
+
+    reply = ''
+    for i, (line, data) in enumerate(realtime_datas[:6]):
+        reply += '车辆%s：%s\n' % (i+1, line.short_name) 
         reply += '距离%s还有 %s米，' % (station.name, int(data['station_distance']))
         reply += '预计%s到达\n\n' % data['station_arriving_time'].strftime('%H:%M')
     return reply.strip()

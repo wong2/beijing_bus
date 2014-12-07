@@ -12,6 +12,7 @@ class BeijingBus(object):
     def build_cache(cls):
         cache.invalidate(hard=True)
         cls.get_all_lines()
+        cls.get_all_stations()
 
     @classmethod
     def get_all_lines(cls):
@@ -22,38 +23,10 @@ class BeijingBus(object):
         return list(BusLine.search(str(keyword)))
 
     @classmethod
-    def extract_line_and_stations(cls, sentence):
-        """
-        解析 '坐847从西坝河到将台路口西' 为结构化数据: 
-        {
-            'line': <Line: 847(马甸桥西-雷庄村)>,
-            'from_station': <Station 西坝河>,
-            'to_station': <Station 将台路口西>
-        }
-        """
-        if isinstance(sentence, unicode):
-            sentence = sentence.encode('utf-8')
-
-        possible_lines = cls.extract_lines(sentence)
-        if not possible_lines:
-            return None
-
-        for line in possible_lines:
-            matches = []
-            for s in line.stations:
-                index = sentence.find(s.name)
-                if index > -1:
-                    matches.append((index, s))
-            if len(matches) >= 2 and matches[0][0] < matches[1][0]:
-                break
-        else:
-            return None
-
-        return {
-            'line': line,
-            'from_station': matches[0][1],
-            'to_station': matches[1][1]
-        }
+    @cache.cache_on_arguments()
+    def get_all_stations(cls):
+        stations = [s for line in cls.get_all_lines() for s in line.stations]
+        return sorted(set(stations), key=lambda s: len(s.name), reverse=True)
 
     @classmethod
     def extract_lines(cls, sentence):
@@ -72,3 +45,14 @@ class BeijingBus(object):
         if not lines:
             lines = BeijingBus.search_lines('运通' + line_name)
         return lines
+    
+    @classmethod
+    def extract_stations(cls, sentence):
+        original_sentence = sentence
+        matches = set()
+        for s in cls.get_all_stations():
+            if s.name in sentence:
+                matches.add(s)
+                sentence = sentence.replace(s.name, '')
+        # 按在sentence中出现的顺序排序
+        return sorted(matches, key=lambda s: original_sentence.find(s.name))
