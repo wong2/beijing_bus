@@ -38,3 +38,5 @@ nosetests.xml
 
 offline_data/*
 !offline_data/README.md
+
+local_*config.py
