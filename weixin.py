@@ -102,8 +102,7 @@ def list_supported_lines():
     names = set([
         line.short_name for line in BeijingBus.get_all_lines()
     ])
-    names.sort()
-    return ''.join(['<p>%s</p>' % name for name in names])
+    return ''.join(['<p>%s</p>' % name for name in sorted(names)])
 
 
 if __name__ == '__main__':
