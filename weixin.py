@@ -106,6 +106,7 @@ def list_supported_lines():
               <html lang="zh-CN">
                 <head>
                   <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+                  <title>支持的线路的列表</title>
                 </head>
                 <body>%s</body>
               </html>
