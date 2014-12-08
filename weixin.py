@@ -102,8 +102,15 @@ def list_supported_lines():
     names = set([
         line.short_name for line in BeijingBus.get_all_lines()
     ])
-    return ''.join(['<p>%s</p>' % name for name in sorted(names)])
-
+    return '''<!DOCTYPE html>
+              <html lang="zh-CN">
+                <head>
+                  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
+                </head>
+                <body>%s</body>
+              </html>
+           ''' % ''.join(['<p>%s</p>' % name for name in sorted(names)])
+                  
 
 if __name__ == '__main__':
     app.run(debug=True, port=8484)
