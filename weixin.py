@@ -97,5 +97,14 @@ def get_realtime_message(lines, station):
     return reply.strip()
 
 
+@app.route('/list')
+def list_supported_lines():
+    names = set([
+        line.short_name for line in BeijingBus.get_all_lines()
+    ])
+    names.sort()
+    return ''.join(['<p>%s</p>' % name for name in names])
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=8484)
