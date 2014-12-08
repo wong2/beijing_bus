@@ -38,6 +38,9 @@ def query(**kwargs):
         reply = '我好笨笨哦，还不懂你在说什么。\n%s' % QUERY_EXAMPLE
         return r(reply)
 
+    if isinstance(content, unicode):
+        content = content.encode('utf-8')
+
     stations = BeijingBus.extract_stations(content)
     lines = BeijingBus.extract_lines(content)
     if len(stations) < 2:
