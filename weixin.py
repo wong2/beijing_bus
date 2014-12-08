@@ -10,8 +10,11 @@ app = Flask(__name__)
 app.config.from_object('config')
 
 weixin = Weixin(app)
-
 app.add_url_rule('/weixin', view_func=weixin.view_func)
+
+if app.config.get('SENTRY_DSN'):
+    from raven.contrib.flask import Sentry
+    sentry = Sentry(app)
 
 
 QUERY_EXAMPLE = '查询示例： 从西坝河到将台路口西'
@@ -84,7 +87,7 @@ def get_realtime_message(lines, station):
     realtime_datas.sort(key=lambda d: d[1]['station_arriving_time'])
 
     if not realtime_datas:
-        return '目前还没有车要来呢'
+        return '暂时还没有车要来呢 T T'
 
     reply = ''
     for i, (line, data) in enumerate(realtime_datas[:6]):
