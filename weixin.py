@@ -1,6 +1,6 @@
 #-*-coding:utf-8-*-
 
-from flask import Flask
+from flask import Flask, render_template
 from flask_weixin import Weixin
 
 from beijing_bus import BeijingBus
@@ -102,15 +102,8 @@ def list_supported_lines():
     names = set([
         line.short_name for line in BeijingBus.get_all_lines()
     ])
-    return '''<!DOCTYPE html>
-              <html lang="zh-CN">
-                <head>
-                  <meta name="viewport" content="width=device-width, initial-scale=1.0">  
-                  <title>支持的线路的列表</title>
-                </head>
-                <body>%s</body>
-              </html>
-           ''' % ''.join(['<p>%s</p>' % name for name in sorted(names)])
+    names = sorted([n.decode('utf-8') for n in names])
+    return render_template('list.html', line_names=names)
                   
 
 if __name__ == '__main__':

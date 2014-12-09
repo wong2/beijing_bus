@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block title %}
+支持的线路列表
+{% endblock %}
+
+{% block body %}
+  {% for line_name in line_names %}
+    <p>{{ line_name }}</p>
+  {% endfor %}
+{% endblock %}
