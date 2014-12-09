@@ -31,10 +31,13 @@ def query(**kwargs):
         )
 
     if message_type == 'event' and kwargs.get('event') == 'subscribe':
-        reply = ('欢迎关注北京实时公交!\n'
-                 '你可以通过向我发送消息查询公交实时到站时间。\n\n%s'
-                ) % QUERY_EXAMPLE
-        return r(reply)
+        msg = app.config.get('ON_FOLLOW_MESSAGE')
+        if not msg:
+            return ''
+
+        return weixin.reply(
+                   username, type='news', sender=sender, articles=[msg]
+               )
 
     content = kwargs.get('content')
     if not content:
