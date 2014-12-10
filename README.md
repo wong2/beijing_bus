@@ -51,4 +51,6 @@
 
 - [x] 实现 beijing_bus 模块，提供需要的Python接口
 - [x] 终端中的查询工具
-- [x] 微信公众号 [二维码](http://doora.qiniudn.com/bmg5w.jpg)
+- [x] 微信公众号，扫描二维码关注：
+
+![公众号二维码](http://doora.qiniudn.com/bmg5w.jpg)
