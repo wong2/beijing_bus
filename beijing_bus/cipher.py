@@ -52,6 +52,6 @@ class Cipher(object):
         return str(bytearray(self.calc(data)))
 
     def encrypt(self, message, encode=base64.b64encode):
-        message = encode(message)
         data = bytearray(message)
-        return str(bytearray(self.calc(data)))
+        message = str(bytearray(self.calc(data)))
+        return encode(message)
