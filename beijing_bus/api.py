@@ -4,14 +4,21 @@ import logging
 import requests
 import xmltodict 
 
+from requests.exceptions import ConnectionError
+
 
 API_ENDPOINT = 'http://mc.aibang.com/aiguang/bjgj.c'
 REALTIME_ENDPOINT = 'http://bjgj.aibang.com:8899/bus.php'
 
 
 def request_api(url, params):
-    r = requests.get(url, params=params, headers={'cid':1024})
-    return xmltodict.parse(r.text)
+    for _ in range(3):
+        try:
+            r = requests.get(url, params=params, headers={'cid':1024})
+        except ConnectionError:
+            continue
+        else:
+            return xmltodict.parse(r.text)
 
 
 def get_line_update_state():
