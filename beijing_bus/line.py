@@ -81,7 +81,12 @@ class BusLine(object):
         root = resp_doc['root']
         if not root.get('data'):
             return []
-        return [self._format_realtime_data(data) for data in root['data']['bus']]
+
+        datas = root['data']['bus']
+        if not isinstance(datas, list):
+            datas = [datas]
+
+        return [self._format_realtime_data(data) for data in datas]
 
     def _format_realtime_data(self, data):
 
