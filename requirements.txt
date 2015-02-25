@@ -5,3 +5,4 @@ dogpile.cache
 Flask
 Flask-Weixin
 pytz
+gevent

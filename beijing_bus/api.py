@@ -15,10 +15,11 @@ def request_api(url, params):
     for _ in range(3):
         try:
             r = requests.get(url, params=params, headers={'cid':1024})
-        except ConnectionError:
+        except (ConnectionError, requests.exceptions.Timeout) as e:
             continue
         else:
             return xmltodict.parse(r.text)
+    raise e
 
 
 def get_line_update_state():

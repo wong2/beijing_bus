@@ -3,6 +3,10 @@
 from datetime import datetime
 from pytz import timezone
 
+from gevent import monkey
+monkey.patch_all()
+from gevent.pool import Pool
+
 from . import api
 from .cache import cache
 from .cipher import Cipher
@@ -65,7 +69,8 @@ class BusLine(object):
     @classmethod
     def get_all_lines(cls):
         line_ids = cls.get_all_line_ids()
-        return cls.gets(line_ids)
+        pool = Pool(10)
+        return pool.map(cls.get, line_ids)
 
     @classmethod
     def search(cls, name):
