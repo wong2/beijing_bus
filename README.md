@@ -11,7 +11,7 @@
 * `pip install -r requirements.txt` 安装依赖
 * `python manage.py build_cache` 获取离线数据，建立本地缓存
 
-项目自带了一个终端中的查询工具作为例子，运行： `python manage.py query`
+项目自带了一个终端中的查询工具作为例子，运行： `python manage.py cli`
 
 ### Examples
 
