@@ -1,9 +1,21 @@
-#-*-coding:utf-8-*-
+# -*-coding:utf-8-*-
 
 from flask import Flask, render_template
 from flask_weixin import Weixin
 
 from beijing_bus import BeijingBus
+
+
+# 查询示例
+QUERY_EXAMPLE = '查询示例： 从西坝河到将台路口西'
+
+# 用户关注公众号时给他推送一条消息
+ON_FOLLOW_MESSAGE = {
+    'title': '使用说明',
+    'description': '',
+    'picurl': 'http://doora.qiniudn.com/H9v9n.jpg',
+    'url': 'http://t.cn/Rz0J1V6',
+}
 
 
 app = Flask(__name__)
@@ -17,8 +29,6 @@ if app.config.get('SENTRY_DSN'):
     sentry = Sentry(app)
 
 
-QUERY_EXAMPLE = '查询示例： 从西坝河到将台路口西'
-
 @weixin.register('*')
 def query(**kwargs):
     username = kwargs.get('sender')
@@ -31,13 +41,9 @@ def query(**kwargs):
         )
 
     if message_type == 'event' and kwargs.get('event') == 'subscribe':
-        msg = app.config.get('ON_FOLLOW_MESSAGE')
-        if not msg:
-            return ''
-
         return weixin.reply(
-                   username, type='news', sender=sender, articles=[msg]
-               )
+            username, type='news', sender=sender, articles=[ON_FOLLOW_MESSAGE]
+        )
 
     content = kwargs.get('content')
     if not content:
@@ -65,10 +71,10 @@ def query(**kwargs):
 
 def match_stations_with_lines(from_station, to_station, lines=None):
 
-    def match(a, b, L):
-        '''检查L中包含a和b且a比b靠前'''
+    def match(a, b, l):
+        '''检查l中包含a和b且a比b靠前'''
         try:
-            return L.index(a) < L.index(b)
+            return l.index(a) < l.index(b)
         except ValueError:
             return False
 
@@ -76,8 +82,7 @@ def match_stations_with_lines(from_station, to_station, lines=None):
         lines = BeijingBus.get_all_lines()
 
     return [
-        line for line in lines 
-             if match(from_station, to_station, line.stations)
+        line for line in lines if match(from_station, to_station, line.stations)
     ]
 
 
@@ -94,7 +99,7 @@ def get_realtime_message(lines, station):
 
     reply = ''
     for i, (line, data) in enumerate(realtime_datas[:6]):
-        reply += '车辆%s：%s\n' % (i+1, line.short_name) 
+        reply += '车辆%s：%s\n' % (i+1, line.short_name)
         reply += '距离%s还有 %s米，' % (station.name, int(data['station_distance']))
         reply += '预计%s到达\n\n' % data['station_arriving_time'].strftime('%H:%M')
     return reply.strip()
@@ -107,7 +112,7 @@ def list_supported_lines():
     ])
     names = sorted([n.decode('utf-8') for n in names])
     return render_template('list.html', line_names=names)
-                  
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=8484)
