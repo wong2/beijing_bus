@@ -1,21 +1,24 @@
-#-*-coding:utf-8-*-
+# -*-coding:utf-8-*-
 
 import time
 import click
 from datetime import datetime
-from beijing_bus import BeijingBus
+from beijing_bus import BeijingBus, cache
 
 
 @click.group()
-def cli():
+def cmd_group():
     pass
 
 
-@click.command(help='build or re-build the cache')
+@cmd_group.command(help='build or re-build the cache')
 def build_cache():
     import logging
-    logging.basicConfig(level=logging.DEBUG)
-    BeijingBus.build_cache()
+    logging.basicConfig(level=logging.INFO)
+
+    cache.invalidate(hard=True)
+    BeijingBus.get_all_stations()
+
     click.secho('Done!', fg='green')
 
 
@@ -36,8 +39,8 @@ def echo_realtime_data(line, station_num):
         click.echo()
 
 
-@click.command()
-def query():
+@cmd_group.command()
+def cli():
     q = click.prompt('请输入线路名', value_proc=str)
     lines = BeijingBus.search_lines(q)
     for index, line in enumerate(lines):
@@ -63,11 +66,7 @@ def query():
     while True:
         echo_realtime_data(line, q)
         time.sleep(5)
-    
-
-cli.add_command(build_cache)
-cli.add_command(query)
 
 
 if __name__ == '__main__':
-    cli()
+    cmd_group()

@@ -1,4 +1,4 @@
-#-*-coding:utf-8-*-
+# -*-coding:utf-8-*-
 
 import re
 
@@ -7,12 +7,6 @@ from .line import BusLine
 
 
 class BeijingBus(object):
-
-    @classmethod
-    def build_cache(cls):
-        cache.invalidate(hard=True)
-        cls.get_all_lines()
-        cls.get_all_stations()
 
     @classmethod
     def get_all_lines(cls):
@@ -45,7 +39,7 @@ class BeijingBus(object):
         if not lines:
             lines = BeijingBus.search_lines('运通' + line_name)
         return lines
-    
+
     @classmethod
     def extract_stations(cls, sentence):
         original_sentence = sentence

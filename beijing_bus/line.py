@@ -1,11 +1,7 @@
-#-*-coding:utf-8-*-
+# -*-coding:utf-8-*-
 
 from datetime import datetime
 from pytz import timezone
-
-from gevent import monkey
-monkey.patch_all()
-from gevent.pool import Pool
 
 from . import api
 from .cache import cache
@@ -14,7 +10,7 @@ from .station import BusStation
 
 
 class BusLine(object):
-    
+
     def __init__(self, **kwargs):
         self.stations = []
         for name, value in kwargs.iteritems():
@@ -48,7 +44,13 @@ class BusLine(object):
         })
 
         for station_data in busline['stations']['station']:
-            name, no, lon, lat = map(d, station_data.values())
+            vs = station_data.values()
+            try:
+                name, _, lon, lat = map(d, vs)
+            except TypeError:
+                # some station may not have lat lon info
+                name, lon, lat = d(vs[0]), 0.0, 0.0
+
             station = BusStation(name, float(lat), float(lon))
             line.stations.append(station)
 
@@ -65,12 +67,11 @@ class BusLine(object):
         root = resp_doc['root']
         line_ids = [line['id'] for line in root['lines']['line']]
         return line_ids
-    
+
     @classmethod
     def get_all_lines(cls):
         line_ids = cls.get_all_line_ids()
-        pool = Pool(10)
-        return pool.map(cls.get, line_ids)
+        return [cls.get(line_id) for line_id in line_ids]
 
     @classmethod
     def search(cls, name):

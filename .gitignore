@@ -36,7 +36,6 @@ nosetests.xml
 .pydevproject
 
 
-offline_data/*
-!offline_data/README.md
+offline_data/*.lock
 
-local_*config.py
+local_config.py

@@ -1,8 +1,8 @@
-#-*-coding:utf-8-*-
+# -*-coding:utf-8-*-
 
 import logging
 import requests
-import xmltodict 
+import xmltodict
 
 from requests.exceptions import ConnectionError
 
@@ -23,13 +23,13 @@ def request_api(url, params):
 
 
 def get_line_update_state():
-    logging.debug('Getting all lines')
+    logging.info('Getting all lines')
     params = {'m': 'checkUpdate', 'version': '1'}
     return request_api(API_ENDPOINT, params)
 
 
 def get_bus_offline_data(line_id):
-    logging.debug('Fetching line: %s' % line_id)
+    logging.info('Fetching line: %s' % line_id)
     params = {'m': 'update', 'id': line_id}
     return request_api(API_ENDPOINT, params)
 
