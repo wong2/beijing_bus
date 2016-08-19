@@ -14,7 +14,7 @@ REALTIME_ENDPOINT = 'http://bjgj.aibang.com:8899/bus.php'
 def request_api(url, params):
     for _ in range(3):
         try:
-            r = requests.get(url, params=params, headers={'cid':1024})
+            r = requests.get(url, params=params, headers={'cid': '1024'})
         except (ConnectionError, requests.exceptions.Timeout) as e:
             continue
         else:
