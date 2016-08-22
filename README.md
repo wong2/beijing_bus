@@ -1,6 +1,6 @@
 ## 北京实时公交
 
-该项目是北京实时公交查询接口的Python绑定，接口逆向自其[安卓客户端](http://www.bjjtw.gov.cn/topic/bjssgj/)
+该项目是北京实时公交查询接口的Python绑定，接口[逆向](https://github.com/wong2/beijing_bus/wiki/Decompile)自其[安卓客户端](http://www.bjjtw.gov.cn/topic/bjssgj/)
 
 ### 警告
 
