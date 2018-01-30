@@ -1,3 +1,5 @@
+## [不再维护]：代码已经很久没有更新，调用的 api 接口可能已经改变。有兴趣的朋友可以提 PR
+
 ## 北京实时公交
 
 该项目是北京实时公交查询接口的Python绑定，接口[逆向](https://github.com/wong2/beijing_bus/wiki/Decompile)自其[安卓客户端](http://www.bjjtw.gov.cn/topic/bjssgj/)
